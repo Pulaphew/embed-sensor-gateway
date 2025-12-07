@@ -4,6 +4,9 @@
 #include <RtcDS1302.h>
 
 // ------------------- WiFi & NETPIE Config ---------------------
+// const char* ssid = "Frigg";
+// const char* password = "0817410115";
+
 const char* ssid = "Frigg";
 const char* password = "0817410115";
 
@@ -29,7 +32,7 @@ RtcDS1302<ThreeWire> Rtc(myWire);
 
 // ---------------- Button & LED (Toggle Logic) ----------------
 const int buttonPin = 12;
-// const int LEDPin    = 2; 
+const int LEDPin    = 21; 
 
 int lastButtonState = HIGH;       // raw last reading
 int currentButtonState = HIGH;    // raw current reading
@@ -120,7 +123,7 @@ void readButton() {
         Serial.println(curtainEnabled ? "ENABLED" : "DISABLED");
       }
 
-      // digitalWrite(LEDPin, curtainEnabled ? HIGH : LOW);   // ← update LED
+      digitalWrite(LEDPin, curtainEnabled ? HIGH : LOW);   // ← update LED
     }
   }
 
@@ -247,9 +250,9 @@ void setup() {
 
   // ---------------- BUTTON INIT ----------------
   pinMode(buttonPin, INPUT_PULLUP);
-  // pinMode(LEDPin, OUTPUT);
+  pinMode(LEDPin, OUTPUT);
 
-  // digitalWrite(LEDPin, curtainEnabled ? HIGH : LOW);
+  digitalWrite(LEDPin, curtainEnabled ? HIGH : LOW);
 
   currentButtonState = digitalRead(buttonPin);
   lastStableState = currentButtonState;
