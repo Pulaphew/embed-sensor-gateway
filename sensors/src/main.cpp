@@ -13,8 +13,8 @@
 #define EEPROM_LIGHT_ADDR 4
 
 // Global variables for limits
-int tempLimit = 30; // Default value
-int lightLimit = 50;  // Default value
+int tempLimit = 25; // Default value
+int lightLimit = 75;  // Default value
 
 // #define LED_open 5
 // #define LED_close 18
@@ -106,7 +106,7 @@ void checkTempLightMode() {
 
   // Skip if sensor read failed
   // if (isnan(t)) return;
-  t=30.0;
+  // t=30.0;
   Serial.print("Temp: "); Serial.print(t);
   Serial.print("°C | Light: "); Serial.print(l);
   Serial.print("% | Limits - Temp: "); Serial.print(tempLimit);
@@ -117,7 +117,7 @@ void checkTempLightMode() {
     if (curtain_state != 0) {
       Serial.println("Condition met: CLOSING curtain");
       startClosing();
-      delay(MOTOR_TIME - 100);
+      delay(MOTOR_TIME - 110);
       stopMotor();
       curtain_state = 0;
     }
@@ -175,7 +175,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     } 
     else if (msg == "close") {
       startClosing();
-      delay(MOTOR_TIME-100); // Run for full duration
+      delay(MOTOR_TIME-110); // Run for full duration
       stopMotor();
       curtain_state = 0;
       // Update state to fully closed
@@ -211,16 +211,17 @@ void callback(char* topic, byte* payload, unsigned int length) {
     
     // Calculate time required (Proportional to the difference)
     // If MOTOR_TIME is 1100ms, and we move 50%, time is 550ms
-    int moveTime = abs(difference) * (MOTOR_TIME / 100.0);
-
+    
     if (difference > 0) {
       // Target is higher -> OPEN
+      int moveTime = abs(abs(difference) * (MOTOR_TIME) / 100.0);
       startOpening();
       delay(moveTime); 
       stopMotor();
     } 
     else {
       // Target is lower -> CLOSE
+      int moveTime = abs(abs(difference) * (MOTOR_TIME-100) / 100.0);
       startClosing();
       delay(moveTime); 
       stopMotor();
@@ -294,8 +295,10 @@ void readSensorsAndPublish() {
   float temperature = dht.readTemperature();
 
   if (isnan(humidity) || isnan(temperature)) { 
-    humidity = 50;
-    temperature = 30; 
+    Serial.println("Failed to read from DHT sensor!");
+    return;
+    // humidity = 50;
+    // temperature = 30; 
   }
 
   char payload[256];
